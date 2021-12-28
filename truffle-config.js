@@ -1,7 +1,9 @@
+const path = require('path');
+const envPath = path.join(__dirname, './.env');
+require('dotenv').config({ path: envPath });
+
 const HDWalletProvider = require('truffle-hdwallet-provider');
 
-const privateKey = "";
-const bscScanAPIKey = "";
 module.exports = {
     contracts_directory: "./contracts",
     compilers: {
@@ -17,30 +19,52 @@ module.exports = {
         }
     },
     networks: {
+        networkCheckTimeout: 999999,
         development: {
-            host: "127.0.0.1",
-            port: 7545,
-            network_id: "*"
+            // host: "127.0.0.1",
+            // port: 8545,
+            network_id: "*",
+            provider: () => new HDWalletProvider(
+                process.env.PRIVATE_KEY,
+                `http://127.0.0.1:8545`
+            ),
+        },
+        rinkeby: {
+            provider: () => new HDWalletProvider(
+                process.env.PRIVATE_KEY,
+                `https://rinkeby.infura.io/v3/5dd88d5454464db1b3fef72c5bd3064c`
+            ),
+            network_id: 4,
+            gasPrice: 5000000000, // 5 gwei,
+            timeoutBlocks: 200,
         },
         testnet: {
-            provider: () => new HDWalletProvider(privateKey, `https://data-seed-prebsc-2-s1.binance.org:8545`),
+            provider: () => new HDWalletProvider(
+                process.env.PRIVATE_KEY,
+                `https://data-seed-prebsc-2-s1.binance.org:8545`
+            ),
             network_id: 97,
-            confirmations: 3,
+            gasPrice: 5100000000, // 5.1 gwei,
+            // skipDryRun: true
             timeoutBlocks: 200,
-            skipDryRun: true
         },
         mainnet: {
-            provider: () => new HDWalletProvider(privateKey, `https://bsc-dataseed.binance.org/`), //       http://35.72.193.66:8545
+            networkCheckTimeout: 999999,
+            provider: () => new HDWalletProvider(
+                process.env.PRIVATE_KEY,
+                `http://54.254.118.147:8545`
+                // `https://bsc-dataseed.binance.org/`
+            ),
             network_id: 56,
             // skipDryRun: true,
             timeoutBlocks: 200,
-            gasPrice: 5100000000, // 5.1 gwei, 
+            gasPrice: 5100000000, // 5.1 gwei,
         }
     },
     plugins: [
         'truffle-plugin-verify'
     ],
     api_keys: {
-        bscscan: bscScanAPIKey,
-      }
+        bscscan: process.env.BSCSCAN_API_KEY,
+    }
 };
