@@ -304,12 +304,12 @@ contract BondingCalculator is IBondingCalculator {
     using SafeMath for uint112;
 
     address public immutable Anchored;
-    address public immutable RS;
+    address public immutable Sax;
 
-    constructor(address _Anchored, address _RS) {
+    constructor(address _Anchored, address _Sax) {
         require(_Anchored != address(0));
         Anchored = _Anchored;
-        RS = _RS;
+        Sax = _Sax;
     }
 
     function getKValue(address _pair) public view returns (uint256 k_) {
@@ -351,7 +351,7 @@ contract BondingCalculator is IBondingCalculator {
             reserve = reserve1;
         }
         return
-        reserve.mul(2 * (10**IERC20(RS).decimals())).div(
+        reserve.mul(2 * (10**IERC20(Sax).decimals())).div(
             getTotalValue(_pair)
         );
     }
